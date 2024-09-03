@@ -16,7 +16,7 @@ const Home = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
-  const [errorMessages, setErrorMessages] = useState([]); 
+  const [errorMessages, setErrorMessages] = useState([]);
 
   const handleFileSelect = (file) => {
     const selectedFile = {
@@ -26,7 +26,7 @@ const Home = () => {
       id: file.id,
       isGoogleDrive: true,
       uploading: false,
-      status: "", 
+      status: "",
     };
     validateAndSetFiles([selectedFile]);
   };
@@ -58,6 +58,9 @@ const Home = () => {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      console.log(file.name);
+
+      // Mark the file as uploading
       setFiles((prevFiles) =>
         prevFiles.map((f, index) =>
           index === i ? { ...f, uploading: true } : f
@@ -67,6 +70,7 @@ const Home = () => {
       const formData = new FormData();
       try {
         if (file.isGoogleDrive) {
+          // Fetch the Google Drive file as a Blob
           const response = await axios.get(
             `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`,
             {
@@ -81,6 +85,7 @@ const Home = () => {
           formData.append("file", file);
         }
 
+        // Upload the file
         const response = await axios.post(
           "http://localhost:3000/upload",
           formData,
@@ -102,10 +107,11 @@ const Home = () => {
           }
         );
 
+        // Handle different response statuses
         if (response.status === 200) {
           setFiles((prevFiles) =>
             prevFiles.map((f, index) =>
-              index === i ? { ...f, uploading: false , status: "uploaded" } : f
+              index === i ? { ...f, uploading: false, status: "uploaded" } : f
             )
           );
         } else if (response.status === 300) {
@@ -116,7 +122,10 @@ const Home = () => {
         } else if (response.status === 400) {
           setErrorMessages((prevMessages) => [
             ...prevMessages,
-            { message: `Server error while uploading ${file.name}.`, color: "red" },
+            {
+              message: `Server error while uploading ${file.name}.`,
+              color: "red",
+            },
           ]);
         }
       } catch (error) {
@@ -128,66 +137,21 @@ const Home = () => {
       }
     }
 
-
-    // const formData = new FormData();
-    // for (const file of files) {
-    //   if (file.isGoogleDrive) {
-    //     try {
-    //       const response = await axios.get(
-    //         `https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`,
-    //         {
-    //           headers: {
-    //             Authorization: `Bearer ${file.oauthToken}`,
-    //           },
-    //           responseType: "blob",
-    //         }
-    //       );
-    //       formData.append("file", response.data, file.name);
-    //     } catch (error) {
-    //       console.error("Error fetching Google Drive file:", error);
-    //       return;
-    //     }
-    //   } else {
-    //     formData.append("file", file);
-    //   }
-    // }
-
-    // try {
-    //   const response = await axios.post(
-    //     "http://localhost:3000/upload",
-    //     formData,
-    //     {
-    //       headers: {
-    //         "Content-Type": "multipart/form-data",
-    //       },
-    //       withCredentials: true,
-    //       onUploadProgress: (progressEvent) => {
-    //         const percentCompleted = Math.round(
-    //           (progressEvent.loaded * 100) / progressEvent.total
-    //         );
-    //         setUploadProgress(percentCompleted);
-    //       },
-    //     }
-    //   );
-
-    //   if (response.status === 200) {
-    //     alert("Files uploaded successfully!");
-    //     setFiles([]);
-    //     setUploadProgress(0);
-    //   }
-    // } catch (error) {
-    //   if (error.response && error.response.data) {
-    //     alert(error.response.data.error);
-    //   } else {
-    //     alert("Error uploading files.");
-    //   }
-    // }
-
     setUploading(false);
     setUploadProgress([]);
     setFiles([]);
-
   };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    validateAndSetFiles(droppedFiles);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
 
   return (
     <div className="flex items-center justify-center h-screen flex-col w-screen bg-neutral-300">
@@ -200,13 +164,25 @@ const Home = () => {
           className="flex flex-col gap-5 w-full justify-center mt-6"
           disabled={uploading}
         >
-          <input
-            type="file"
-            onChange={(e) => validateAndSetFiles(Array.from(e.target.files))}
-            multiple
-            className="flex h-10 rounded-md border border-input bg-neutral-200 px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-semibold"
-            disabled={uploading}
-          />
+          <div
+            className={`border-2 border-dashed rounded-lg p-5 text-center ${
+              uploading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+            }`}
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+          >
+            <input
+              type="file"
+              onChange={(e) => validateAndSetFiles(Array.from(e.target.files))}
+              multiple
+              className="hidden"
+              disabled={uploading}
+              id="fileInput"
+            />
+            <label htmlFor="fileInput" className="cursor-pointer">
+              Drag and drop files here, or click to select files
+            </label>
+          </div>
           <GooglePicker
             clientId={CLIENT_ID}
             developerKey={DEVELOPER_KEY}
@@ -232,8 +208,9 @@ const Home = () => {
               picker.build().setVisible(true);
             }}
           >
-            <button className="bg-gradient-to-r from-blue-400 w-full text-white px-5 py-2 rounded-lg to-blue-800 font-semibold  hover:from-blue-500 hover:to-blue-900 "
-             disabled={uploading}
+            <button
+              className="bg-gradient-to-r from-blue-400 w-full text-white px-5 py-2 rounded-lg to-blue-800 font-semibold  hover:from-blue-500 hover:to-blue-900 "
+              disabled={uploading}
             >
               Choose from Google Drive
             </button>
@@ -244,7 +221,8 @@ const Home = () => {
             <ul>
               {uploadProgress.map((progress, index) => (
                 <li key={index}>
-                  {files[index].name}: {progress}% {files[index].uploading && <span>Uploading...</span>}
+                  {files[index].name}: {progress}%{" "}
+                  {files[index].uploading && <span>Uploading...</span>}
                 </li>
               ))}
             </ul>
@@ -290,19 +268,23 @@ const Home = () => {
           </div>
         </form>
         <ul className="mt-5">
-        {files.map((file, index) => (
-            <li key={index} className="font-semibold"   style={{
-              color:
-                file.status === "uploaded"
-                  ? "green"
-                  : file.uploading
-                  ? "gray"
-                  : "black",
-            }}>
-              {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB){" "}
-              {file.uploading && <span>Uploading...</span>}
-            </li>
-          ))}
+          {files.map((file, index) => {
+            // The file name and size should be correctly accessed as follows:
+            const fileName = file.name;
+            const fileSizeMB = (file.size / 1024 / 1024).toFixed(2); // Convert bytes to MB
+
+            return (
+              <li
+                key={index}
+                className={`font-semibold ${
+                  file.status === "uploaded" ? "text-green-600" : ""
+                }`}
+              >
+                {fileName} ({fileSizeMB} MB){" "}
+                {file.uploading && <span>Uploading...</span>}
+              </li>
+            );
+          })}
         </ul>
         {errorMessages.length > 0 && (
           <ul className="mt-5">
@@ -319,4 +301,3 @@ const Home = () => {
 };
 
 export default Home;
-

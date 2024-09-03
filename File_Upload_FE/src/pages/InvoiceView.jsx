@@ -28,7 +28,7 @@ const InvoiceView = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/getInvoices");
+        const response = await axios.get("http://192.168.100.238:3000/getInvoices");
         console.log(response.data);
         setInvoiceData(response.data);
       } catch (error) {
@@ -42,19 +42,19 @@ const InvoiceView = () => {
   const columns = [
     {
       field: "date",
-      headerName: "Date",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
-      width: 150,
-    },
-    {
-      field: "no",
-      headerName: "No.",
+      headerName: "Date of Upload",
       type: "number",
       headerAlign: "left",
       align: "left",
       width: 170,
+    },
+    {
+      field: "invoiceDate",
+      headerName: "Invoice Date",
+      type: "number",
+      headerAlign: "left",
+      align: "left",
+      width: 150,
     },
     {
       field: "name",
@@ -62,9 +62,24 @@ const InvoiceView = () => {
       width: 250,
     },
     {
-      field: "amount",
-      headerName: "Amount",
-      width: 110,
+      field: "auction_name",
+      headerName: "Auction Name",
+      width: 150,
+    },
+    {
+      field: "listItems",
+      headerName: "Number of Cars",
+      headerAlign: "center",
+      align: "center",
+      width: 150,
+      renderCell: ({ row }) => {
+        const { listItems } = row;
+        return (
+          <Box margin="0 auto" display="flex" justifyContent="center" alignItems={"center"}>
+            {listItems.length}
+          </Box>
+        );
+      },
     },
     {
       headerName: "Details",
@@ -123,7 +138,7 @@ const InvoiceView = () => {
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box className="absolute top-2/4 md:w-2/5 w-4/5 left-2/4 h-96 overflow-y-auto transform -translate-x-2/4 -translate-y-2/4 bg-white p-4 rounded-md">
+          <Box className="absolute top-2/4 md:w-2/3 w-4/5 left-2/4 h-96 overflow-y-auto transform -translate-x-2/4 -translate-y-2/4 bg-white p-4 rounded-md">
             <Box className="flex justify-between items-center">
               <Typography variant="" className="md:text-3xl text-2xl font-bold">
                 Invoice Items
@@ -132,7 +147,8 @@ const InvoiceView = () => {
                 <GiCancel size={22} />
               </IconButton>
             </Box>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <Box className="flex lg:flex-row flex-col  gap-3 ">
+          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
               <Table >
                 <TableHead>
                   <TableRow>
@@ -162,6 +178,12 @@ const InvoiceView = () => {
                 </TableBody>
               </Table>
             </Typography>
+            <Box className="w-full mt-8">
+              {invoiceData.filter((item) => item.id === selectedId).map((item) => (
+               <img src={item.imgUrl} className="object-cover" key={item.id} />
+              ))}
+            </Box>
+          </Box>
           </Box>
         </Modal>
       </Box>
