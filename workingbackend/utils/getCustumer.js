@@ -1,7 +1,7 @@
 import axios from 'axios';
 import stringSimilarity from 'string-similarity';
 
-const customerName = "Bill's Wsurf Shop";
+const customerName = "Bill's";
 
 async function findCustomerIdByName(accessToken, realmId) {
   try {

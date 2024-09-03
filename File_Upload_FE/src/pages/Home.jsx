@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import GooglePicker from "react-google-picker";
+import Cookies from 'js-cookie';
 import axios from "axios";
 
 const Home = () => {
@@ -18,6 +19,34 @@ const Home = () => {
   const [uploading, setUploading] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
 
+  const tokenExpiresAt = Cookies.get('tokenExpiresAt');
+  console.log(tokenExpiresAt);
+  const currentTime = Date.now();
+  const cookies = document.cookie;
+console.log(cookies); 
+  // console.log();
+  useEffect(() => {
+    // Function to check if the token is expired
+    const checkTokenExpiration = () => {
+      const tokenExpiresAt = Cookies.get('tokenExpiresAt');
+      if (tokenExpiresAt) {
+        const currentTime = Date.now();
+        console.log(currentTime);
+        const expiresAt = parseInt(tokenExpiresAt, 10);
+        if (currentTime >= tokenExpiresAt) {
+          // Redirect if token is expired
+          window.location.href = 'http://localhost:3000/authorize';
+        }
+      } else {
+        // Redirect if tokenExpiresAt cookie is not present
+        window.location.href = 'http://localhost:3000/authorize';
+      }
+    };
+
+    // Check token expiration on component mount
+    checkTokenExpiration();
+  }, []);
+  
   const handleFileSelect = (file) => {
     const selectedFile = {
       name: file.name,

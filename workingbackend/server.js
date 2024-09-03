@@ -51,9 +51,9 @@ async function refreshAccessToken(req, res) {
     const newTokenExpiresAt = Date.now() + expiresIn * 1000; // Convert to milliseconds
 
     // Update cookies with new tokens and expiration
-    res.cookie('accessToken', newAccessToken, { httpOnly: true });
-    res.cookie('refreshToken', newRefreshToken, { httpOnly: true });
-    res.cookie('tokenExpiresAt', newTokenExpiresAt, { httpOnly: true });
+    res.cookie('accessToken', newAccessToken,{ path: '/' ,httpOnly: false } );
+    res.cookie('refreshToken', newRefreshToken, { path: '/',httpOnly: false });
+    res.cookie('tokenExpiresAt', newTokenExpiresAt, { path: '/' ,httpOnly: false });
 
     console.log('Access token refreshed and cookies updated.');
   } catch (error) {
@@ -100,11 +100,11 @@ app.get('/callback', async (req, res) => {
     const tokenExpiresAt = Date.now() + expiresIn * 1000; // Convert to milliseconds
 
     // Store tokens and expiration time in cookies
-    res.cookie('accessToken', accessToken, { maxAge: 18000000,httpOnly: true });
-    res.cookie('refreshToken', refreshToken, { maxAge: 18000000,httpOnly: true });
-    res.cookie('tokenExpiresAt', tokenExpiresAt, {maxAge: 18000000, httpOnly: true });
+    res.cookie('accessToken', accessToken, { maxAge: 18000000 });
+    res.cookie('refreshToken', refreshToken, { maxAge: 18000000 });
+    res.cookie('tokenExpiresAt', tokenExpiresAt, {maxAge: 18000000 });
 
-    res.redirect('http://localhost:5173/upload');
+    res.redirect('http://localhost:5173/');
   } catch (error) {
     console.error('Error fetching tokens:', error.response ? error.response.data : error.message);
     res.status(500).send('Failed to exchange authorization code for tokens.');

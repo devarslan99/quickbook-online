@@ -9,7 +9,7 @@ const App = () => {
    <>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Auth />} />
+        <Route path="/" element={<Home />} />
         <Route path="/upload" element={<Home />} />
         <Route path="/invoice" element={<InvoiceView />} />
       </Routes>

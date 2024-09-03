@@ -26,9 +26,9 @@ async function refreshAccessToken(req, res) {
     const newTokenExpiresAt = Date.now() + expiresIn * 1000; // Convert to milliseconds
 
     // Update cookies with new tokens and expiration
-    res.cookie('accessToken', newAccessToken, { maxAge: 18000000,httpOnly: true });
-    res.cookie('refreshToken', newRefreshToken, { maxAge: 18000000,httpOnly: true });
-    res.cookie('tokenExpiresAt', newTokenExpiresAt, {maxAge: 18000000, httpOnly: true });
+    res.cookie('accessToken', newAccessToken, { maxAge: 18000000, path:'/' ,httpOnly: false });
+    res.cookie('refreshToken', newRefreshToken, { maxAge: 18000000,  path:'/' ,httpOnly: false  });
+    res.cookie('tokenExpiresAt', newTokenExpiresAt, {maxAge: 18000000,path:'/',httpOnly: false });
 
     console.log('Access token refreshed and cookies updated.');
   } catch (error) {
