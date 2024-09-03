@@ -10,7 +10,7 @@ const checkImg =async (req, res ,next)=>{
     const document = await Invoice.findOne({ invoiceHash: hash });
     if(document!=null){
         console.log('Img is already used for invoice Creation , Stoping the request');
-      res.status(300).send('Invoice is already created')
+      res.status(202).send('Invoice is already created')
     }else{
       console.log('Invoice is Not Created Moving to Next Controller');
       req.body.hash=hash

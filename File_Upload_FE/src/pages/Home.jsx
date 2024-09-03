@@ -14,7 +14,7 @@ const Home = () => {
 
   const [files, setFiles] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadProgress, setUploadProgress] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]); 
 
@@ -93,11 +93,11 @@ const Home = () => {
               const percentCompleted = Math.round(
                 (progressEvent.loaded * 100) / progressEvent.total
               );
-              setUploadProgress((prevProgress) =>
-                prevProgress.map((progress, index) =>
-                  index === i ? percentCompleted : progress
-                )
-              );
+              setUploadProgress((prevProgress) => {
+                const newProgress = [...prevProgress];
+                newProgress[i] = percentCompleted;
+                return newProgress;
+              });
             },
           }
         );
@@ -108,7 +108,7 @@ const Home = () => {
               index === i ? { ...f, uploading: false , status: "uploaded" } : f
             )
           );
-        } else if (response.status === 300) {
+        } else if (response.status === 202) {
           setErrorMessages((prevMessages) => [
             ...prevMessages,
             { message: `${file.name} already exists.`, color: "yellow" },
