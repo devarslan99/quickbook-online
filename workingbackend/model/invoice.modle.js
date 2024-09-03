@@ -12,7 +12,7 @@ const invoiceSchema =new Schema(
              },
              invoiceDate:{
                 type:String,
-                required: true
+                // required: true
              },
              invoiceJSON:{
                 type:mongoose.Schema.Types.Mixed , 

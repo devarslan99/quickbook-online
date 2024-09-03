@@ -171,6 +171,8 @@ console.log(cookies);
     setFiles([]);
   };
 
+  
+
   const handleDrop = (e) => {
     e.preventDefault();
     const droppedFiles = Array.from(e.dataTransfer.files);
@@ -245,8 +247,8 @@ console.log(cookies);
             </button>
           </GooglePicker>
 
-          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-          {uploadProgress.length > 0 && (
+          {/* {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>} */}
+          {/* {uploadProgress.length > 0 && (
             <ul>
               {uploadProgress.map((progress, index) => (
                 <li key={index}>
@@ -255,7 +257,7 @@ console.log(cookies);
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
           {/* {uploadProgress > 0 && <p>Uploading: {uploadProgress}%</p>} */}
           <div className="flex gap-3 items-center">
             <button
@@ -298,19 +300,19 @@ console.log(cookies);
         </form>
         <ul className="mt-5">
           {files.map((file, index) => {
-            // The file name and size should be correctly accessed as follows:
             const fileName = file.name;
-            const fileSizeMB = (file.size / 1024 / 1024).toFixed(2); // Convert bytes to MB
+            const isUploaded = file.status === "uploaded";
 
             return (
               <li
                 key={index}
                 className={`font-semibold ${
-                  file.status === "uploaded" ? "text-green-600" : ""
+                  isUploaded ? "text-green-600" : ""
                 }`}
               >
-                {fileName} ({fileSizeMB} MB){" "}
-                {file.uploading && <span>Uploading...</span>}
+                {fileName}
+                {file.uploading && !isUploaded && <span> Uploading...</span>}
+                {isUploaded && <span> Uploaded</span>}
               </li>
             );
           })}
