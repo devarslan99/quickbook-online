@@ -17,6 +17,7 @@ const getInvoices=async(req,res)=>{
                 no: invoice.DocNumber,
                 name: invoice.CustomerRef.name,
                 amount: `$${invoice.TotalAmt}`,
+                imgUrl:item.imgUrl,
                 listItems: invoice.Line
                   .filter(line => line.DetailType === "SalesItemLineDetail") // Filter out non-SalesItemLineDetail lines
                   .map(line => ({

@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { createInvoiceData } from '../utils/invoice.js';
 import { Invoice } from '../model/invoice.modle.js';
-const realmId = process.env.REALM_ID;
 
 const getInvoice = async (req, res) => {
+  const realmId = process.env.REALM_ID;
   const accessToken = req.cookies.accessToken;
   const extractedJSON = req.body.extractedJSON;
   console.log("The Access Token is :", accessToken);
   console.log("The extracted JSON is :", extractedJSON);
+  console.log(realmId);
 
   if (!accessToken) {
     return res.status(401).send('Not authorized. Please authorize first by visiting /authorize.');
@@ -77,6 +78,7 @@ const getInvoice = async (req, res) => {
     );
   const doc = {
           invoiceHash:req.body.hash,
+          imgUrl:req.body.imgUrl,
           invoiceJSON:invoiceResponse.data
         }
         const Invoicedoc = await Invoice.create(doc);

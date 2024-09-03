@@ -19,7 +19,7 @@ const createInvoiceData =(jsonString, customerId) => {
         UnitPrice: 150.0, // Example unit price; adjust as needed
         Qty: 1, // Quantity can be adjusted or derived from JSON if needed
       },
-      Description: `${vehicle.year} ${vehicle.make} ${vehicle.model}`, // Description of the vehicle
+      Description: `${vehicle.year} ${vehicle.make} ${vehicle.model} ${vehicle.color}`, // Description of the vehicle
     }));
   console.log('Invoice Lines', invoiceLines);
     // Create the invoice data object

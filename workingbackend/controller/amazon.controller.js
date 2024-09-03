@@ -37,6 +37,8 @@ const extractTextFromImage = async (req, res,next) => {
     const s3Data = await s3.upload(s3Params).promise();
     console.log(`File uploaded successfully. Key: ${s3Data.Key}`);
     console.log(`File uploaded successfully. Bucket: ${s3Data.Bucket}`);
+    const imageUrl = `https://${s3Data.Bucket}.s3.${AWS.config.region}.amazonaws.com/${s3Data.Key}`;
+    console.log('Image URL:', imageUrl);
 
     // Analyze the document with Amazon Textract
     const textractParams = {
@@ -64,6 +66,7 @@ const extractTextFromImage = async (req, res,next) => {
 
     // Send response with extracted text data
     req.body.extractedText=text
+    req.body.imgUrl = imageUrl;
     next()
     // res.json({ text });
 
