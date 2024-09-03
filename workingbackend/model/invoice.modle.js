@@ -6,6 +6,14 @@ const invoiceSchema =new Schema(
                 type:String,
                 required: true
              },
+             imgUrl:{
+                type:String,
+                required: true
+             },
+             invoiceDate:{
+                type:String,
+                required: true
+             },
              invoiceJSON:{
                 type:mongoose.Schema.Types.Mixed , 
                 required: true

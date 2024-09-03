@@ -1,13 +1,15 @@
 import axios from 'axios';
 import { createInvoiceData } from '../utils/invoice.js';
 import { Invoice } from '../model/invoice.modle.js';
-const realmId = process.env.REALM_ID;
+import { findCustomerIdByName } from '../utils/getCustumer.js';
 
 const getInvoice = async (req, res) => {
+  const realmId = process.env.REALM_ID;
   const accessToken = req.cookies.accessToken;
   const extractedJSON = req.body.extractedJSON;
   console.log("The Access Token is :", accessToken);
   console.log("The extracted JSON is :", extractedJSON);
+  console.log(realmId);
 
   if (!accessToken) {
     return res.status(401).send('Not authorized. Please authorize first by visiting /authorize.');
@@ -15,27 +17,34 @@ const getInvoice = async (req, res) => {
 
   try {
     // Query to fetch the list of customers
-    const query = "SELECT * FROM Customer MAXRESULTS 1"; // Adjust MAXRESULTS as needed
-    const customersResponse = await axios.get(
-      `https://sandbox-quickbooks.api.intuit.com/v3/company/${realmId}/query?query=${encodeURIComponent(query)}&minorversion=73`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Accept: 'application/json',
-          'Content-Type': 'text/plain', // Correct Content-Type for query endpoint
-        },
-      }
-    );
 
-    // Check if there are customers in the response
-    if (!customersResponse.data.QueryResponse.Customer || customersResponse.data.QueryResponse.Customer.length === 0) {
-      return res.status(404).send('No customers found.');
+    const customerId = await findCustomerIdByName(accessToken, realmId);
+    if (customerId) {
+      console.log(`Customer ID found: ${customerId}`);
+    } else {
+      console.log('No customer found with that name.');
     }
+    // const query = "SELECT * FROM Customer MAXRESULTS 1"; // Adjust MAXRESULTS as needed
+    // const customersResponse = await axios.get(
+    //   `https://sandbox-quickbooks.api.intuit.com/v3/company/${realmId}/query?query=${encodeURIComponent(query)}&minorversion=73`,
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //       Accept: 'application/json',
+    //       'Content-Type': 'text/plain', // Correct Content-Type for query endpoint
+    //     },
+    //   }
+    // );
 
-    // Get the first customer from the list
-    const firstCustomer = customersResponse.data.QueryResponse.Customer[0];
-    const customerId = firstCustomer.Id;
-    console.log(customerId);
+    // // Check if there are customers in the response
+    // if (!customersResponse.data.QueryResponse.Customer || customersResponse.data.QueryResponse.Customer.length === 0) {
+    //   return res.status(404).send('No customers found.');
+    // }
+
+    // // Get the first customer from the list
+    // const firstCustomer = customersResponse.data.QueryResponse.Customer[0];
+    // const customerId = firstCustomer.Id;
+    // console.log(customerId);
     // Prepare the invoice data
     // const invoiceData = {
     //   CustomerRef: { value: customerId },
@@ -75,9 +84,12 @@ const getInvoice = async (req, res) => {
         },
       }
     );
+    const InvoiceDate = JSON.parse(extractedJSON).date
   const doc = {
           invoiceHash:req.body.hash,
-          invoiceJSON:invoiceResponse.data
+          imgUrl:req.body.imgUrl,
+          invoiceJSON:invoiceResponse.data,
+          invoiceDate:InvoiceDate
         }
         const Invoicedoc = await Invoice.create(doc);
         console.log('Successfully Created the DB document',Invoicedoc);

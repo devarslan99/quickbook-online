@@ -16,7 +16,9 @@ const getInvoices=async(req,res)=>{
                 date: invoice.TxnDate.split('T')[0].split('-').reverse().join('/'), // Format date as DD/MM/YY
                 no: invoice.DocNumber,
                 name: invoice.CustomerRef.name,
+                invoiceDate:item.invoiceDate,
                 amount: `$${invoice.TotalAmt}`,
+                imgUrl:item.imgUrl,
                 listItems: invoice.Line
                   .filter(line => line.DetailType === "SalesItemLineDetail") // Filter out non-SalesItemLineDetail lines
                   .map(line => ({
@@ -24,8 +26,8 @@ const getInvoices=async(req,res)=>{
                     year: line.Description.split(' ')[0] || "", // Extract year from description if available
                     model: line.Description.split(' ')[1] || "", // Extract model from description if available
                     make: line.Description.split(' ')[2] || "", // Extract make from description if available
-                    color: "", // You can add color if available or relevant
-                    winNo: "", // Add winNo if available or relevant
+                    color: line.Description.split(' ')[3] || "", // You can add color if available or relevant
+                    winNo: line.Description.split(' ')[4] || "", // Add winNo if available or relevant
                   }))
               };
             });
