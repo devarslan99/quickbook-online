@@ -100,7 +100,7 @@ const InvoiceView = () => {
   ];
 
   return (
-    <Box className="flex justify-center items-center h-screen bg-neutral-200">
+    <Box className="flex justify-center items-center h-screen bg-backImg bg-cover bg-center">
       <Box
         p={2}
         border={1}
@@ -127,7 +127,7 @@ const InvoiceView = () => {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 10,
+                pageSize: 6,
               },
             },
           }}

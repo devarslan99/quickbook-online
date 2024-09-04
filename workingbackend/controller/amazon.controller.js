@@ -1,19 +1,25 @@
-import AWS from "aws-sdk";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { TextractClient, DetectDocumentTextCommand } from "@aws-sdk/client-textract";
 import path from "path";
 import fs from "fs";
-//working code
+
 // Configure AWS SDK with IAM user credentials
-const extractTextFromImage = async (req, res,next) => {
-  AWS.config.update(
-    {
+const extractTextFromImage = async (req, res, next) => {
+  const s3Client = new S3Client({
+    region: 'us-west-1', // Update with your AWS region
+    credentials: {
       accessKeyId: process.env.AMAZON_ACCESS_KEY_ID,
       secretAccessKey: process.env.AMAZON_SECRET_ACCESS_KEY,
-      region: 'us-west-1', // e.g., 'us-east-1'
-    }
-  );
+    },
+  });
 
-  const s3 = new AWS.S3();
-  const textract = new AWS.Textract();
+  const textractClient = new TextractClient({
+    region: 'us-west-1', // Update with your AWS region
+    credentials: {
+      accessKeyId: process.env.AMAZON_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AMAZON_SECRET_ACCESS_KEY,
+    },
+  });
 
   try {
     console.log('Reading file path');
@@ -34,27 +40,31 @@ const extractTextFromImage = async (req, res,next) => {
       ContentType: req.file.mimetype,
     };
 
-    const s3Data = await s3.upload(s3Params).promise();
-    console.log(`File uploaded successfully. Key: ${s3Data.Key}`);
-    console.log(`File uploaded successfully. Bucket: ${s3Data.Bucket}`);
-    const imageUrl = `https://${s3Data.Bucket}.s3.${AWS.config.region}.amazonaws.com/${s3Data.Key}`;
+    const s3Command = new PutObjectCommand(s3Params);
+    const s3Data = await s3Client.send(s3Command);
+    console.log(`File uploaded successfully. Key: ${s3Params.Key}`);
+    console.log(`File uploaded successfully. Bucket: ${s3Params.Bucket}`);
+    
+    const resolvedRegion = await s3Client.config.region();
+    
+    const imageUrl = `https://${s3Params.Bucket}.s3.${resolvedRegion}.amazonaws.com/${s3Params.Key}`;
     console.log('Image URL:', imageUrl);
-
     // Analyze the document with Amazon Textract
     const textractParams = {
       Document: {
         S3Object: {
-          Bucket: `${s3Data.Bucket}`,
-          Name: `${s3Data.Key}`,
+          Bucket: s3Params.Bucket,
+          Name: s3Params.Key,
         },
       },
     };
 
-    const textractData = await textract.detectDocumentText(textractParams).promise();
+    const textractCommand = new DetectDocumentTextCommand(textractParams);
+    const textractData = await textractClient.send(textractCommand);
 
     // Extract Blocks from Textract response
     const blocks = textractData.Blocks;
-    
+
     // Process WORD and LINE blocks
     const text = blocks
       .filter(block => block.BlockType === 'LINE')
@@ -62,13 +72,11 @@ const extractTextFromImage = async (req, res,next) => {
 
     // Log the extracted text
     console.log('Extracted Text:', JSON.stringify(text, null, 2));
-    // console.log(text);
 
     // Send response with extracted text data
-    req.body.extractedText=text
+    req.body.extractedText = text;
     req.body.imgUrl = imageUrl;
-    next()
-    // res.json({ text });
+    next();
 
   } catch (err) {
     console.error('Error:', err);

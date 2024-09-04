@@ -146,7 +146,7 @@ console.log(cookies);
         } else if (response.status === 202) {
           setErrorMessages((prevMessages) => [
             ...prevMessages,
-            { message: `${file.name} already exists.`, color: "yellow" },
+            { message: `${file.name} already exists.`, color: "magenta" },
           ]);
         } else if (response.status === 400) {
           setErrorMessages((prevMessages) => [
@@ -185,10 +185,10 @@ console.log(cookies);
 
 
   return (
-    <div className="flex items-center justify-center h-screen flex-col w-screen bg-neutral-300">
-      <div className="bg-white rounded-lg p-5 shadow-md">
-        <h1 className="text-4xl text-center font-bold text-neutral-800">
-          Upload Files
+    <div className="flex items-center  min-h-screen flex-col w-screen bg-backImg bg-cover bg-center">
+      <div className="bg-white rounded-lg p-10 mt-20 shadow-md">
+        <h1 className="text-4xl text-center font-medium text-blue-500 mb-8 tracking-wider ">
+          Upload Files For Invoice Creation
         </h1>
         <form
           onSubmit={handleSubmit}
@@ -196,7 +196,7 @@ console.log(cookies);
           disabled={uploading}
         >
           <div
-            className={`border-2 border-dashed rounded-lg p-5 text-center ${
+            className={`border-2 border-dashed rounded-lg p-2 ${
               uploading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
             }`}
             onDrop={handleDrop}
@@ -206,11 +206,11 @@ console.log(cookies);
               type="file"
               onChange={(e) => validateAndSetFiles(Array.from(e.target.files))}
               multiple
-              className="hidden"
+              className="hidden w-full"
               disabled={uploading}
               id="fileInput"
             />
-            <label htmlFor="fileInput" className="cursor-pointer">
+            <label htmlFor="fileInput"  className="cursor-pointer h-[20vh] flex items-center justify-center text-center ">
               Drag and drop files here, or click to select files
             </label>
           </div>
@@ -259,10 +259,10 @@ console.log(cookies);
             </ul>
           )} */}
           {/* {uploadProgress > 0 && <p>Uploading: {uploadProgress}%</p>} */}
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-3 flex-col items-center">
             <button
               type="submit"
-              className="bg-gradient-to-tl from-blue-400 hover:from-blue-500 hover:to-blue-900  text-white px-5 py-2 rounded-lg to-blue-800 font-semibold"
+              className="bg-gradient-to-tl from-blue-400 hover:from-blue-500 hover:to-blue-900  text-white px-5 py-2 w-full rounded-lg to-blue-800 font-semibold"
               disabled={uploading}
             >
               Upload
@@ -306,7 +306,7 @@ console.log(cookies);
             return (
               <li
                 key={index}
-                className={`font-semibold ${
+                className={`font-semibold text-center list-decimal ${
                   isUploaded ? "text-green-600" : ""
                 }`}
               >
@@ -318,7 +318,7 @@ console.log(cookies);
           })}
         </ul>
         {errorMessages.length > 0 && (
-          <ul className="mt-5">
+          <ul className="mt-5 text-center list-decimal ">
             {errorMessages.map((error, index) => (
               <li key={index} style={{ color: error.color }}>
                 {error.message}
