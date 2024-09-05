@@ -5,8 +5,8 @@ import axios from "axios";
 
 const Home = () => {
   const CLIENT_ID =
-    "19549456256-d95e70m8bluhveomm0k9hm8386u9h6e8.apps.googleusercontent.com"; // Replace with your actual Google Client ID
-  const DEVELOPER_KEY = "AIzaSyDWtr3qBE-8i3NJWxWO6tcdbAbM847nS-E"; // Replace with your actual Google API Key
+    ""; // Replace with your actual Google Client ID
+  const DEVELOPER_KEY = ""; // Replace with your actual Google API Key
   const SCOPE = [
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive",
