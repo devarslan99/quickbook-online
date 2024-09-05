@@ -19,6 +19,7 @@ const getInvoices=async(req,res)=>{
                 invoiceDate:item.invoiceDate,
                 amount: `$${invoice.TotalAmt}`,
                 imgUrl:item.imgUrl,
+                Auction:item.Auction,
                 listItems: invoice.Line
                   .filter(line => line.DetailType === "SalesItemLineDetail") // Filter out non-SalesItemLineDetail lines
                   .map(line => ({

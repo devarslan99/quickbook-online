@@ -14,6 +14,10 @@ const invoiceSchema =new Schema(
                 type:String,
                 // required: true
              },
+             Auction:{
+                type:String,
+                // required: true
+             },
              invoiceJSON:{
                 type:mongoose.Schema.Types.Mixed , 
                 required: true

@@ -25,7 +25,9 @@ async function processText(prompt) {
 }
 
 // Example usage
-const examplePrompt = `Extract all the  year , make , model , color and vin# from the text and give it into json format, also add dealer name and date from the text to the json object one time, if the date is not extact make it by guessing :${req.body.extractedText}`
+const examplePrompt = `Make a json object from this extractedText. The format of the json object will be , it will contain a vehicles array 
+which will contain mutiple or one according to text objects with key value pair of year, make, model, color and vin#. The json object besides vehicles will also have
+dealer_name,action and date.Make sure to select right year because just before year their are seriol number like 1 , 2,3 on the img table .The vin# is the vehicle registration number as is usually conatins 8 to 15 numbers.Keep all the keys name exactly as i write, Here is the text:${req.body.extractedText}`
 // const examplePrompt = "Explain the significance of the Turing test in AI.";
 processText(examplePrompt).then(async(result) => {
   console.log("GPT-4 Response:", JSON.parse(result.content));

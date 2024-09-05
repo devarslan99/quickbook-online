@@ -61,11 +61,11 @@ const InvoiceView = () => {
       headerName: "Customer Name",
       width: 250,
     },
-    {
-      field: "auction_name",
-      headerName: "Auction Name",
-      width: 150,
-    },
+    // {
+    //   field: "Auction",
+    //   headerName: "Auction Name",
+    //   width: 150,
+    // },
     {
       field: "listItems",
       headerName: "Number of Cars",
@@ -138,9 +138,9 @@ const InvoiceView = () => {
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box className="absolute top-2/4 md:w-2/3 w-4/5 left-2/4 h-96 overflow-y-auto transform -translate-x-2/4 -translate-y-2/4 bg-white p-4 rounded-md">
-            <Box className="flex justify-between items-center">
-              <Typography variant="" className="md:text-3xl text-2xl font-bold">
+          <Box className="absolute top-2/4 md:w-3/4 w-4/5 left-2/4 h-3/4 overflow-y-auto transform -translate-x-2/4 -translate-y-2/4 bg-white p-4 rounded-md">
+            <Box className="flex justify-between items-center mb-3 ">
+              <Typography variant="" className="md:text-3xl text-2xl font-bold  ">
                 Invoice Items
               </Typography>
               <IconButton onClick={handleOpen} className="mr-3">
@@ -148,7 +148,24 @@ const InvoiceView = () => {
               </IconButton>
             </Box>
           <Box className="flex lg:flex-row flex-col  gap-3 ">
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <Typography id="modal-modal-description" >
+          {invoiceData
+      .filter((item) => item.id === selectedId)
+      .map((item) => (
+        <>
+        <Typography key={item.id} variant="" className="text-base mt-4">
+          Auction Name: {item.Auction}
+        </Typography>
+        <br/>
+        <Typography key={item.id} variant="" className="text-base" >
+          Dealer Name: {item.name}
+        </Typography>
+        <br/>
+        <Typography key={item.id} variant="" className="text-base" >
+          Auction Date: {item.invoiceDate}
+        </Typography>
+        </>
+      ))}
               <Table >
                 <TableHead>
                   <TableRow>
@@ -157,7 +174,7 @@ const InvoiceView = () => {
                     <TableCell sx={{ fontWeight: "bold" }}>Model</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Make</TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Color</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>WIN No</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>VIN No</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -179,9 +196,29 @@ const InvoiceView = () => {
               </Table>
             </Typography>
             <Box className="w-full mt-8">
-              {invoiceData.filter((item) => item.id === selectedId).map((item) => (
-               <img src={item.imgUrl} className="object-cover" key={item.id} />
-              ))}
+            
+            {invoiceData
+  .filter((item) => item.id === selectedId)
+  .map((item) => (
+    item.imgUrl.endsWith('.pdf') ? (
+      <object
+        data={item.imgUrl}
+        type="application/pdf"
+        width="100%"
+        height="500px"
+        key={item.id}
+      >
+        <p>It appears you don't have a PDF plugin for this browser. You can <a href={item.imgUrl}>click here to download the PDF file.</a></p>
+      </object>
+    ) : (
+      <img
+        src={item.imgUrl}
+        alt="Image"
+        className="object-cover"
+        key={item.id}
+      />
+    )
+  ))}
             </Box>
           </Box>
           </Box>

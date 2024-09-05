@@ -85,11 +85,13 @@ const getInvoice = async (req, res) => {
       }
     );
     const InvoiceDate = JSON.parse(extractedJSON).date
+    const AutionName = JSON.parse(extractedJSON).action
   const doc = {
           invoiceHash:req.body.hash,
           imgUrl:req.body.imgUrl,
           invoiceJSON:invoiceResponse.data,
-          invoiceDate:InvoiceDate
+          invoiceDate:InvoiceDate,
+          Auction:AutionName
         }
         const Invoicedoc = await Invoice.create(doc);
         console.log('Successfully Created the DB document',Invoicedoc);
